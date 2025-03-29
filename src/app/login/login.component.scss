@@ -1,0 +1,16 @@
+.login-card-wrapper {
+  width: 450px;
+  margin: 40px auto;
+  .login-card {
+    padding: 20px;
+    text-align: center;
+  }
+  .full-width {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  .error {
+    color: red;
+  }
+}
+

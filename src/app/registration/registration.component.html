@@ -1,0 +1,29 @@
+<!-- simplified registration form to register and test users with different roles -->
+<mat-card class="registration-card">
+    <h2>Register</h2>
+    <form class="registration-card-form" [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Full Name</mat-label>
+        <input matInput type="text" formControlName="fullName" placeholder="Enter your full name" required>
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="Enter your email" required>
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" required>
+      </mat-form-field>
+  
+      <!-- Select Role -->
+      <mat-radio-group formControlName="role" class="full-width">
+        <mat-radio-button value="USER">User</mat-radio-button>
+        <mat-radio-button value="REVIEWER">Reviewer</mat-radio-button>
+      </mat-radio-group>
+  
+      <button mat-raised-button color="primary" type="submit" [disabled]="registrationForm.invalid">Register</button>
+    </form>
+</mat-card>
+  

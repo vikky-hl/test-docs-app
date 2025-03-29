@@ -1,0 +1,11 @@
+.registration-card {
+    width: 500px;
+    padding: 25px;
+    margin: 30px auto;
+    display: flex;
+    flex-direction: column;
+    .registration-card-form {
+        display: flex;
+        flex-direction: column;
+    }
+}
