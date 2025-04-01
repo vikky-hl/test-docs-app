@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>Add Document</h2>
+
+<mat-dialog-content>
+  <form (ngSubmit)="addDocument()">
+    <label for="documentName">Document Name</label>
+    <input type="text" id="documentName" [(ngModel)]="newDocumentName" name="documentName" required />
+
+    <label for="status">Document Status</label>
+    <select id="status" [(ngModel)]="newDocumentStatus" name="status" required>
+      <option value="DRAFT">Draft</option>
+      <option value="READY_FOR_REVIEW">Ready for Review</option>
+    </select>
+
+    <label for="file">Upload File</label>
+    <input type="file" id="file" (change)="onFileChange($event)" required />
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button (click)="closeDialog()">Cancel</button>
+  <button mat-button (click)="addDocument()">Add</button>
+</mat-dialog-actions>

@@ -7,6 +7,6 @@ import { RegistrationComponent } from './registration/registration.component';
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'test-registration', component: RegistrationComponent },
-    { path: 'document-control-panel', component: DocumentPanelComponent, canActivate: [AuthGuard] },
+    { path: 'document-panel', component: DocumentPanelComponent, canActivate: [AuthGuard] },
     { path: '**', redirectTo: 'login' }
 ];

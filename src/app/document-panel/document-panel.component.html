@@ -1,1 +1,83 @@
-<p>document-panel works!</p>
+<div class="document-panel">
+      <div class="table-wrapper"><div *ngIf="isUser()">
+        <mat-table [dataSource]="documents()" class="mat-table">
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+              <mat-cell *matCellDef="let document"> {{ document.name }} </mat-cell>
+            </ng-container>
+        
+            <ng-container matColumnDef="status">
+              <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+              <mat-cell *matCellDef="let document"> {{ document.status }} </mat-cell>
+            </ng-container>
+        
+            <ng-container *ngIf="isReviewer()" matColumnDef="creator">
+              <mat-header-cell *matHeaderCellDef> Creator </mat-header-cell>
+              <mat-cell *matCellDef="let document"> {{ document.creator.email }} </mat-cell>
+            </ng-container>
+        
+            <ng-container matColumnDef="actions">
+              <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+              <mat-cell *matCellDef="let document" class="actions">
+                <button mat-icon-button (click)="editDocument(document)" *ngIf="isUser()" matTooltip="Edit Document">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteDocument(document)"
+                  *ngIf="isUser() && (document.status === documentStatus.DRAFT || document.status === documentStatus.REVOKE)" matTooltip="Delete Document">
+                  <mat-icon>delete</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" (click)="revokeDocument(document)"
+                  *ngIf="isUser() && document.status === documentStatus.READY_FOR_REVIEW" matTooltip="Revoke Document">
+                  <mat-icon>undo</mat-icon>
+                </button>
+                <ng-container *ngIf="isReviewer()">
+                  <button mat-icon-button color="primary"
+                    (click)="changeDocumentStatus(document, documentStatus.UNDER_REVIEW)" matTooltip="Under Review">
+                    <mat-icon>check_circle</mat-icon>
+                  </button>
+                  <button mat-icon-button color="primary"
+                    (click)="changeDocumentStatus(document, documentStatus.APPROVED)" matTooltip="Approve">
+                    <mat-icon>done</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn"
+                    (click)="changeDocumentStatus(document, documentStatus.DECLINED)"
+                    *ngIf="document.status === documentStatus.UNDER_REVIEW" matTooltip="Decline">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </ng-container>
+              </mat-cell>
+            </ng-container>
+        
+            <ng-container matColumnDef="view">
+              <mat-header-cell *matHeaderCellDef> View </mat-header-cell>
+              <mat-cell *matCellDef="let document">
+                <button mat-icon-button color="primary" (click)="viewDocument(document)" matTooltip="View Document">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </mat-cell>
+            </ng-container>
+        
+            <mat-header-row *matHeaderRowDef="displayedColumns()"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns();"></mat-row>
+          </mat-table>
+
+          <div class="add-btn-wrapper">
+            <button mat-raised-button color="primary" class="add-document-button" (click)="openAddDocumentDialog()">
+                <mat-icon>add</mat-icon> Add Document
+            </button>
+          </div>
+        
+      </div>
+
+      <div class="pagination-wrapper">
+        <mat-paginator 
+            [length]="totalItems()" 
+            [pageSize]="pageSize()"
+            (page)="changePage($event.pageIndex + 1)">
+        </mat-paginator>
+      </div>
+    </div>
+
+  </div>
+
+  <pdf-viewer></pdf-viewer>

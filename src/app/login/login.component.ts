@@ -1,20 +1,32 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
+
+// Angular Modules
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule, NgIf } from '@angular/common';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+
+// Angular Material Modules
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
-import { AuthService } from '../auth/auth.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
+
+// Services
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  imports: [
+    ReactiveFormsModule,
+    NgIf,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule
+  ],
   providers: [AuthService]
-
 })
 export class LoginComponent {
   loginForm: FormGroup;
@@ -22,18 +34,18 @@ export class LoginComponent {
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      email: ['', [Validators.required, Validators.email]], 
+      password: ['', [Validators.required, Validators.minLength(6)]] 
     });
   }
 
-  onSubmit() {
+  // Submit method to handle login form submission
+  onSubmit(): void {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
       this.authService.login(email, password).subscribe({
-        error: (err) => {
-          this.errorMessage = 'Invalid credentials. Please try again.'
-          // console.log(err)
+        error: () => {
+          this.errorMessage = 'Invalid credentials. Please try again.';
         }
       });
     }
