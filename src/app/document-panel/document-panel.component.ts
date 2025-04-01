@@ -32,13 +32,16 @@ import { PaginatedDocuments } from '../models/paginated-documents.interface';
   styleUrls: ['./document-panel.component.scss']
 })
 export class DocumentPanelComponent implements OnInit {
+  // Injecting required services
   private documentService = inject(DocumentService);
   private authService = inject(AuthService);
   private userService = inject(UserService);
   private dialog = inject(MatDialog);
 
+  // Enum for document statuses
   public documentStatus = DocumentStatus;
 
+  // Signals for managing component state
   documents: WritableSignal<Document[]> = signal([]);
   currentPage: WritableSignal<number> = signal(1);
   pageSize: WritableSignal<number> = signal(10);
@@ -47,14 +50,17 @@ export class DocumentPanelComponent implements OnInit {
   selectedStatus: WritableSignal<DocumentStatus | undefined> = signal(undefined);
   creatorFilter: WritableSignal<string> = signal('');
 
+  // Computed signals to determine user role
   isReviewer = computed(() => this.userService.getUserRole() === 'REVIEWER');
   isUser = computed(() => this.userService.getUserRole() === 'USER');
 
+  // Dynamically setting displayed table columns based on user role
   displayedColumns = computed(() =>
     this.isReviewer() ? ['name', 'status', 'creator', 'actions', 'view'] : ['name', 'status', 'actions', 'view']
   );
 
   ngOnInit(): void {
+    // Load documents only if user data is available
     if (this.userService.getCurrentUser()()) {
       this.loadDocuments();
     } else {
@@ -62,6 +68,9 @@ export class DocumentPanelComponent implements OnInit {
     }
   }
 
+  /**
+   * Fetches documents from the API with applied filters
+   */
   loadDocuments(): void {
     const params: any = {
       page: this.currentPage(),
@@ -69,6 +78,7 @@ export class DocumentPanelComponent implements OnInit {
       sort: this.sortField()
     };
 
+    // Apply filtering based on user role
     if (!this.isReviewer()) {
       params.creatorId = this.authService.getUserId();
     } else {
@@ -83,6 +93,7 @@ export class DocumentPanelComponent implements OnInit {
           DocumentStatus.REVOKE
         ].join(',');
       }
+      // Apply creator filter if provided
       const creatorValue = this.creatorFilter();
       if (creatorValue) {
         if (this.isValidUUID(creatorValue)) {
@@ -102,6 +113,7 @@ export class DocumentPanelComponent implements OnInit {
     });
   }
 
+  // Pagination and sorting methods
   changePage(page: number): void {
     this.currentPage.set(page);
     this.loadDocuments();
@@ -112,6 +124,7 @@ export class DocumentPanelComponent implements OnInit {
     this.loadDocuments();
   }
 
+  // Filtering methods
   filterByStatus(status: DocumentStatus): void {
     this.selectedStatus.set(status);
     this.loadDocuments();
@@ -122,10 +135,11 @@ export class DocumentPanelComponent implements OnInit {
     this.loadDocuments();
   }
 
+  /**
+   * Opens a dialog for adding a new document
+   */
   openAddDocumentDialog(): void {
-    const dialogRef = this.dialog.open(AddDocumentDialogComponent, {
-      width: '500px'
-    });
+    const dialogRef = this.dialog.open(AddDocumentDialogComponent, { width: '500px' });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -134,6 +148,9 @@ export class DocumentPanelComponent implements OnInit {
     });
   }
 
+  /**
+   * Deletes a document if its status allows deletion
+   */
   deleteDocument(document: Document): void {
     if (document.status === DocumentStatus.DRAFT || document.status === DocumentStatus.REVOKE) {
       this.documentService.deleteDocument(document.id).subscribe({
@@ -145,6 +162,9 @@ export class DocumentPanelComponent implements OnInit {
     }
   }
 
+  /**
+   * Revokes a document if its status allows revocation
+   */
   revokeDocument(document: Document): void {
     if (document.status === DocumentStatus.READY_FOR_REVIEW) {
       this.documentService.changeDocumentStatus(document.id, DocumentStatus.REVOKE).subscribe({
@@ -156,6 +176,9 @@ export class DocumentPanelComponent implements OnInit {
     }
   }
 
+  /**
+   * Changes the status of a document
+   */
   changeDocumentStatus(document: Document, newStatus: DocumentStatus): void {
     this.documentService.changeDocumentStatus(document.id, newStatus).subscribe({
       next: () => {
@@ -165,6 +188,9 @@ export class DocumentPanelComponent implements OnInit {
     });
   }
 
+  /**
+   * Opens a dialog to view the document in a PDF viewer
+   */
   viewDocument(document: Document): void {
     this.dialog.open(PdfViewerComponent, {
       width: '80vw',
@@ -173,8 +199,15 @@ export class DocumentPanelComponent implements OnInit {
     });
   }
 
+  /**
+   * Checks if a given string is a valid UUID
+   */
   isValidUUID(uuid: string): boolean {
     const regex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
     return regex.test(uuid);
+  }
+
+  editDocument(document: Document): void {
+    //future edit feature
   }
 }
